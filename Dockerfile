@@ -15,18 +15,19 @@ RUN \
 
 RUN \
   curl -s https://get.docker.io/ubuntu/ | sh && \
-  echo 'DOCKER_OPTS="-H :2375 -H unix:///var/run/docker.sock"' >> /etc/default/docker && \
-  /etc/init.d/docker start
+  echo 'DOCKER_OPTS="-H :2375 -H unix:///var/run/docker.sock"' >> /etc/default/docker
 
 RUN \
-  mkdir /var/run/sshd -p && \
+  mkdir -p /var/run/sshd && \
   echo 'root:screencast' | chpasswd && \
   sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
   sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd && \
-  echo "export VISIBLE=now" >> /etc/profile && \
-  /usr/sbin/sshd
+  echo "export VISIBLE=now" >> /etc/profile
 
 VOLUME /var/lib/docker
 
 EXPOSE 2375
 EXPOSE 22
+
+COPY docker-entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
