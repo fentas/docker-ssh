@@ -1,28 +1,38 @@
 FROM ubuntu:14.04
-
 MAINTAINER Jan Guth <jan.guth@gmail.com>
 
-ENV DEBIAN_FRONTEND noninteractive
-ENV NOTVISIBLE "in users profile"
+ENV AUTHORIZED_KEYS ""
+
+# add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
+RUN groupadd -r cattle && useradd -r -g cattle cattle
 
 RUN \
   apt-get update && \
   apt-get install -y \
     curl \
-    openssh-server \
-	&& rm -rf /var/lib/apt/lists/* \
-  && apt-get autoremove
+    openssh-server
 
 RUN \
-  curl -s https://get.docker.io/ubuntu/ | sh && \
-  echo 'DOCKER_OPTS="-H :2375 -H unix:///var/run/docker.sock"' >> /etc/default/docker
+  curl -Ls https://get.docker.io/ubuntu/ | sh && \
+  echo 'DOCKER_OPTS="-H :2375 -H unix:///var/run/docker.sock"' >> /etc/default/docker && \
+  usermod -aG docker cattle
+
+RUN \
+  rm -rf /var/lib/apt/lists/* && \
+  apt-get autoremove
 
 RUN \
   mkdir -p /var/run/sshd && \
-  echo 'root:screencast' | chpasswd && \
-  sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config && \
-  sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd && \
-  echo "export VISIBLE=now" >> /etc/profile
+  sed 's/#?PermitRootLogin [a-z_-]+/PermitRootLogin no/' -r -i /etc/ssh/sshd_config && \
+  sed 's/#?PasswordAuthentication [a-z_-]+/PasswordAuthentication no/' -r -i /etc/ssh/sshd_config && \
+  sed 's/session\s*required\s*pam_loginuid.so/session optional pam_loginuid.so/g' -i /etc/pam.d/sshd
+
+COPY ./authorized_keys /home/cattle/.ssh/
+
+RUN \
+  chmod 700 /home/cattle/.ssh/ && \
+  chmod 600 /home/cattle/.ssh/authorized_keys && \
+  chown cattle:cattle -R /home/cattle
 
 VOLUME /var/lib/docker
 
