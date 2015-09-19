@@ -15,6 +15,8 @@ RUN \
 RUN \
   curl -Ls https://get.docker.io/ubuntu/ | sh && \
   echo 'DOCKER_OPTS="-H :2375 -H unix:///var/run/docker.sock"' >> /etc/default/docker && \
+  curl -sL https://github.com/docker/compose/releases/download/1.4.0/docker-compose-`uname -s`-`uname -m` | sudo tee /usr/local/bin/docker-compose > /dev/null && \
+  sudo chmod +x /usr/local/bin/docker-compose && \
   usermod -aG docker cattle
 
 RUN \
