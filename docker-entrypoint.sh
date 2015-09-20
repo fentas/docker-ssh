@@ -8,6 +8,8 @@ if [ ! -z "${AUTHORIZED_KEYS}" ]; then
   fi
 fi
 
+# make sure docker group is set on socket
+sudo chgrp docker /var/run/docker.sock
 sudo restart docker
 sudo service ssh start
 
