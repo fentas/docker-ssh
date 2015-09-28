@@ -37,6 +37,8 @@ RUN \
   chown cattle:cattle -R /home/cattle
 
 VOLUME /var/lib/docker
+VOLUME /data
+RUN chown cattle:cattle -R /data
 
 EXPOSE 2375
 EXPOSE 22

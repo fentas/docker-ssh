@@ -13,6 +13,8 @@ sudo chgrp docker /var/run/docker.sock
 sudo restart docker
 sudo service ssh start
 
+sudo chown cattle:cattle -R /data
+
 if [ -z $1 ]; then
   set -- bash "$@"
 #  set -- /usr/sbin/sshd -D "$@"
