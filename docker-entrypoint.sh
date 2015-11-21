@@ -15,7 +15,16 @@ sudo service ssh start
 
 sudo chown cattle:cattle -R /data
 
-if [ -z $1 ]; then
+if [ ! -z "${DOCKER_LOGIN_HOST}" ]; then
+  sudo docker login -u "${DOCKER_LOGIN_USER}" --password="${DOCKER_LOGIN_PASS}" -e "${DOCKER_LOGIN_EMAIL}" "${DOCKER_LOGIN_HOST}"
+fi
+
+IFS=' ' read -ra IMAGE <<< "${DOCKER_PULL}"
+for i in "${IMAGE[@]}"; do
+  sudo docker pull "${i}" &
+done
+
+if [ -z "${1}" ]; then
   set -- bash "$@"
 #  set -- /usr/sbin/sshd -D "$@"
 #else
