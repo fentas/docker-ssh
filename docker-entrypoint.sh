@@ -11,7 +11,7 @@ fi
 # make sure docker group is set on socket
 sudo chgrp docker /var/run/docker.sock
 sudo restart docker
-sudo service ssh start
+sudo service ssh stop
 
 sudo chown cattle:cattle -R /data
 
@@ -24,9 +24,9 @@ for i in "${IMAGE[@]}"; do
   sudo docker pull "${i}" &
 done
 
-if [ -z "${1}" ]; then
-  set -- bash "$@"
-#  set -- /usr/sbin/sshd -D "$@"
+if [ -z "${1}" ] || [ "${1:0:1}" = '-' ]; then
+#  set -- bash "$@"
+  set -- /usr/sbin/sshd -D "$@"
 #else
 fi
 
