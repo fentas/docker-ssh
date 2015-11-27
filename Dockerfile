@@ -10,7 +10,7 @@ ENV DOCKER_LOGIN_PASS ""
 ENV DOCKER_LOGIN_EMAIL ""
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
-RUN groupadd -r cattle && useradd -r -g cattle cattle
+RUN groupadd -r cattle && useradd -r -s /bin/bash -g cattle cattle
 
 RUN \
   export DOCKER_ENGINE="1.8.3-0~trusty" && \

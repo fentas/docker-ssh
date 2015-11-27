@@ -1,4 +1,4 @@
-NS = $(DOCKER_NS)
+NS = $(DOCKER_NS_GCE)
 VERSION ?= latest
 
 REPO = ssh
@@ -10,7 +10,7 @@ build:
 	docker build -t $(NS)/$(REPO):$(VERSION) .
 
 push:
-	docker push $(NS)/$(REPO):$(VERSION)
+	gcloud docker push $(NS)/$(REPO):$(VERSION)
 
 shell:
 	docker run --rm --name $(NAME) -i -t --env-file $(NS)/$(REPO)^:$(VERSION) /bin/bash
